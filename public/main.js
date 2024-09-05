@@ -1,26 +1,27 @@
-// Connect to Socket.IO
 const socket = io();
+let username;
 
-// Send message when the form is submitted
-document.getElementById('message-form').addEventListener('submit', function (e) {
-    e.preventDefault(); // Prevent form from submitting normally
-
-    // Get message from input field
-    const message = document.getElementById('message-input').value;
-
-    // Emit message to server
-    socket.emit('chatMessage', message);
-
-    // Clear the input field after sending
-    document.getElementById('message-input').value = '';
+document.getElementById('set-username-button').addEventListener('click', () => {
+    const userInput = document.getElementById('username-input').value.trim();
+    if (userInput) {
+        username = userInput;
+        document.getElementById('username-section').style.display = 'none';
+        document.getElementById('chat-section').style.display = 'block';
+        socket.emit('userJoined', username);
+    }
 });
 
-// Listen for 'message' event and display it
-socket.on('message', (message) => {
-    // Create a new div for the message
-    const messageDiv = document.createElement('div');
-    messageDiv.innerText = message;
+document.getElementById('message-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const messageInput = document.getElementById('message-input').value.trim();
+    if (messageInput) {
+        socket.emit('chatMessage', { username, message: messageInput });
+        document.getElementById('message-input').value = '';
+    }
+});
 
-    // Append the message to the messages container
-    document.getElementById('messages').appendChild(messageDiv);
+socket.on('message', (data) => {
+    const messageElement = document.createElement('div');
+    messageElement.textContent = `${data.username}: ${data.message}`;
+    document.getElementById('messages').appendChild(messageElement);
 });

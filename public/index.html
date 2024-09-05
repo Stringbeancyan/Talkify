@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messaging Service</title>
-    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
         <h1>Messaging Service</h1>
-        <div id="messages"></div> <!-- Messages will appear here -->
 
-        <form id="message-form">
-            <input type="text" id="message-input" placeholder="Enter your message" required>
-            <button type="submit" id="send-button">Send</button>
-        </form>
+        <div id="username-section">
+            <input type="text" id="username-input" placeholder="Enter a username" required>
+            <button id="set-username-button">Set Username</button>
+        </div>
+
+        <div id="chat-section" style="display:none;">
+            <div id="messages"></div>
+            <form id="message-form">
+                <input type="text" id="message-input" placeholder="Enter your message" required>
+                <button type="submit" id="send-button">Send</button>
+            </form>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="public/js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>
