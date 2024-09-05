@@ -7,16 +7,20 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+let messages = [];  // Store messages in-memory for now
 
 io.on('connection', (socket) => {
     console.log('A user connected');
 
-    // Broadcast the received message to all clients
+    // Send all previous messages to newly connected users
+    socket.emit('previous-messages', messages);
+
+    // When a user sends a message
     socket.on('send-message', (data) => {
-        console.log('Message received:', data);
-        io.emit('receive-message', data);  // Emit message to all connected clients
+        messages.push(data);  // Store message in-memory
+        io.emit('receive-message', data);  // Broadcast message to all users
     });
 
     socket.on('disconnect', () => {

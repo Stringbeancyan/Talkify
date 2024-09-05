@@ -1,20 +1,25 @@
-const socket = io();  // Ensure this is after socket.io.js is loaded
+const socket = io();
+
+document.getElementById('compose-btn').addEventListener('click', () => {
+    document.getElementById('compose-form').style.display = 'block';
+});
 
 document.getElementById('send-button').addEventListener('click', () => {
-    const message = document.getElementById('message-input').value;
     const username = document.getElementById('username').value;
-    if (message && username) {
-        socket.emit('send-message', { username, message });
-        const li = document.createElement('li');
-        li.textContent = `You: ${message}`;
-        document.getElementById('messages').appendChild(li);
-        document.getElementById('message-input').value = '';  // Clear the input field
+    const recipient = document.getElementById('recipient').value;
+    const message = document.getElementById('message-input').value;
+
+    if (username && recipient && message) {
+        socket.emit('send-message', { username, recipient, message });
+        document.getElementById('compose-form').style.display = 'none';
+        document.getElementById('message-input').value = '';
+    } else {
+        alert('Please fill in all fields');
     }
 });
 
-// Listen for incoming messages
 socket.on('receive-message', (data) => {
     const li = document.createElement('li');
-    li.textContent = `${data.username}: ${data.message}`;
-    document.getElementById('messages').appendChild(li);
+    li.textContent = `${data.username} to ${data.recipient}: ${data.message}`;
+    document.getElementById('message-list').appendChild(li);
 });

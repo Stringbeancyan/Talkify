@@ -3,15 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Application</title>
+    <title>Gmail Clone</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Chat Application</h1>
-    <input id="username" placeholder="Enter your username">
-    <input id="message-input" placeholder="Enter your message">
-    <button id="send-button">Send</button>
-    <ul id="messages"></ul>
-    <script src="/socket.io/socket.io.js"></script> <!-- Socket.IO client library -->
-    <script src="main.js"></script> <!-- Your custom JavaScript -->
+    <div class="app">
+        <header>
+            <h1>Gmail Clone</h1>
+        </header>
+
+        <aside class="sidebar">
+            <button id="compose-btn">Compose</button>
+            <ul>
+                <li class="active">Inbox</li>
+                <li>Sent</li>
+            </ul>
+        </aside>
+
+        <section class="main-content">
+            <div class="inbox" id="inbox">
+                <!-- Messages will be rendered here -->
+                <ul id="message-list"></ul>
+            </div>
+
+            <div class="compose" id="compose-form" style="display: none;">
+                <h2>Compose Message</h2>
+                <input id="username" type="text" placeholder="Your username">
+                <input id="recipient" type="text" placeholder="Recipient username">
+                <textarea id="message-input" placeholder="Your message"></textarea>
+                <button id="send-button">Send</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
