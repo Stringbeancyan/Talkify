@@ -3,31 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Messaging</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #messages {
-            list-style-type: none;
-            padding: 0;
-        }
-        #messages li {
-            margin-bottom: 10px;
-        }
-        #username, #message-input, #send-button {
-            margin-bottom: 10px;
-        }
-    </style>
+    <title>Chat Application</title>
 </head>
 <body>
-    <h1>Real-Time Messaging</h1>
-    <div>
-        <input id="username" placeholder="Enter your username" />
-        <br/>
-        <input id="message-input" placeholder="Enter your message" />
-        <button id="send-button">Send</button>
-    </div>
+    <h1>Chat Application</h1>
+    <input id="username" placeholder="Enter your username">
+    <input id="message-input" placeholder="Enter your message">
+    <button id="send-button">Send</button>
     <ul id="messages"></ul>
     <script src="/socket.io/socket.io.js"></script>
     <script src="main.js"></script>

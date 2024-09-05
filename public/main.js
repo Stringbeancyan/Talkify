@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io();  // Ensure this is after socket.io.js is loaded
 
 document.getElementById('send-button').addEventListener('click', () => {
     const message = document.getElementById('message-input').value;
@@ -16,4 +16,4 @@ socket.on('receive-message', (data) => {
     const li = document.createElement('li');
     li.textContent = `${data.username}: ${data.message}`;
     document.getElementById('messages').appendChild(li);
-});
+});s
