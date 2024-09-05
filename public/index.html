@@ -3,90 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messaging App</title>
+    <title>Real-Time Messaging</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        #chat-container { display: flex; }
-        #chat { flex: 2; padding: 10px; }
-        #inbox { flex: 1; padding: 10px; border-left: 1px solid #ddd; }
-        .message { margin-bottom: 10px; }
-        .username-container { margin-bottom: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #messages {
+            list-style-type: none;
+            padding: 0;
+        }
+        #messages li {
+            margin-bottom: 10px;
+        }
+        #username, #message-input, #send-button {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    <div id="username-container" class="username-container">
-        <input type="text" id="username" placeholder="Enter your username">
-        <button id="set-username-button">Set Username</button>
+    <h1>Real-Time Messaging</h1>
+    <div>
+        <input id="username" placeholder="Enter your username" />
+        <br/>
+        <input id="message-input" placeholder="Enter your message" />
+        <button id="send-button">Send</button>
     </div>
-    <div id="chat-container" style="display:none;">
-        <div id="chat">
-            <ul id="messages"></ul>
-            <input type="text" id="message-input" placeholder="Type a message">
-            <button id="send-button">Send</button>
-        </div>
-        <div id="inbox">
-            <h3>Inbox</h3>
-            <ul id="inbox-messages"></ul>
-        </div>
-    </div>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script>
-        const socket = io('https://your-backend-url.com');  // Replace with your backend URL
-
-        // Function to set up the chat interface
-        function setupChat(username) {
-            socket.emit('set-username', username);
-            document.getElementById('username-container').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'flex';
-        }
-
-        // Check if username exists in local storage
-        const savedUsername = localStorage.getItem('username');
-        if (savedUsername) {
-            setupChat(savedUsername);
-        }
-
-        document.getElementById('set-username-button').addEventListener('click', () => {
-            const username = document.getElementById('username').value;
-            if (username) {
-                localStorage.setItem('username', username);
-                setupChat(username);
-            }
-        });
-
-        socket.on('login-success', (messages) => {
-            messages.forEach(msg => {
-                const li = document.createElement('li');
-                li.textContent = `${msg.sender}: ${msg.message}`;
-                document.getElementById('inbox-messages').appendChild(li);
-            });
-        });
-
-        document.getElementById('send-button').addEventListener('click', () => {
-            const message = document.getElementById('message-input').value;
-            const recipient = prompt('Enter recipient username:');
-            if (message && recipient) {
-                socket.emit('send-message', { recipient, message });
-                const li = document.createElement('li');
-                li.textContent = `You: ${message}`;
-                document.getElementById('messages').appendChild(li);
-                document.getElementById('message-input').value = '';  // Clear the input field
-            }
-        });
-
-        socket.on('receive-message', (data) => {
-            const li = document.createElement('li');
-            li.textContent = `${data.sender}: ${data.message}`;
-            document.getElementById('inbox-messages').appendChild(li);
-        });
-
-        socket.on('user-online', (username) => {
-            console.log(`${username} is online`);
-        });
-
-        socket.on('user-offline', (username) => {
-            console.log(`${username} is offline`);
-        });
-    </script>
+    <ul id="messages"></ul>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
