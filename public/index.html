@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messaging Service</title>
+</head>
+<body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+        <input id="username" placeholder="Enter your username" required>
+        <input id="input" placeholder="Enter a message" required>
+        <button>Send</button>
+    </form>
+
+    <!-- Include Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Include your JavaScript files -->
+    <script src="app.js"></script>
+    <script src="socket.js"></script>
+</body>
+</html>
