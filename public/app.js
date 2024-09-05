@@ -1,39 +1,66 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-app.get('/', (req, res) => {
-  res.send('Socket.IO Server');
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static('public'));  // Serve static files from the 'public' directory
+
+// In-memory store for users and messages
+const users = {};  // { socketId: username }
+const messages = {};  // { username: [message1, message2, ...] }
+
+// Handle user registration
+app.post('/register', (req, res) => {
+    const { username } = req.body;
+    if (users[username]) {
+        return res.status(400).send('Username already taken');
+    }
+    users[username] = null;  // Set initial socketId as null
+    messages[username] = [];
+    res.status(200).send('User registered');
 });
 
 io.on('connection', (socket) => {
-  let username;
+    let currentUser;
 
-  // Listen for the 'join' event to capture the username
-  socket.on('join', (name) => {
-    username = name;
-    console.log(`${username} has joined the chat.`);
-  });
+    // Handle user login
+    socket.on('login', (username) => {
+        if (users[username] !== undefined) {
+            users[username] = socket.id;
+            currentUser = username;
+            socket.emit('login-success', messages[username]);
+            io.emit('user-online', username);
+        } else {
+            socket.emit('login-failed', 'User not found');
+        }
+    });
 
-  // Listen for 'chat message' event
-  socket.on('chat message', (msgData) => {
-    const message = msgData.message;
-    console.log(`${username}: ${message}`);
+    // Handle private message
+    socket.on('send-message', (data) => {
+        const { recipient, message } = data;
+        if (users[recipient]) {
+            io.to(users[recipient]).emit('receive-message', { sender: currentUser, message });
+            messages[recipient].push({ sender: currentUser, message });
+        }
+    });
 
-    // Broadcast the message along with the username
-    io.emit('chat message', { username: msgData.username, message: msgData.message });
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`${username} has disconnected`);
-  });
+    // Handle user disconnect
+    socket.on('disconnect', () => {
+        if (currentUser) {
+            users[currentUser] = null;
+            io.emit('user-offline', currentUser);
+        }
+    });
 });
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}`);
 });
