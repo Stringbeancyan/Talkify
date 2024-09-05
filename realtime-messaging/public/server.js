@@ -12,9 +12,12 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('A user connected');
+
+    // Handle incoming messages
     socket.on('sendMessage', (message) => {
-        io.emit('receiveMessage', message);
+        io.emit('receiveMessage', message); // Broadcast the message to all connected clients
     });
+
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });

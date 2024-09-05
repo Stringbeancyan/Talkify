@@ -3,23 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Messaging App</title>
+    <title>Real-Time Messaging</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div>
-        <label for="username">Set Username:</label>
-        <input type="text" id="username" placeholder="Enter username">
-        <button id="setUsername">Set Username</button>
+    <div id="chat">
+        <!-- Messages will appear here -->
     </div>
-
-    <div id="chat"></div>
-
-    <div>
-        <input type="text" id="messageInput" placeholder="Type a message">
-        <button id="sendMessage">Send</button>
-    </div>
-
+    <input type="text" id="username" placeholder="Enter your username">
+    <button id="setUsername">Set Username</button>
+    <input type="text" id="messageInput" placeholder="Type a message">
+    <button id="sendMessage">Send Message</button>
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
 </body>

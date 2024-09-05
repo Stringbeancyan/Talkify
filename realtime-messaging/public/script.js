@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io('https://your-railway-app.railway.app'); // Replace with your WebSocket server URL
 
 document.addEventListener('DOMContentLoaded', () => {
     const setUsernameButton = document.getElementById('setUsername');
