@@ -3,33 +3,30 @@ const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
 
-// Initialize app
+// Initialize app and create server
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-// Serve static files (CSS and JS)
+// Serve static files (like CSS and JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Run when a client connects
+// Socket.IO connection
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    // Broadcast when a user connects
-    socket.broadcast.emit('message', 'A new user has joined the chat');
-
-    // Listen for chatMessage
+    // Listen for 'chatMessage' event from client
     socket.on('chatMessage', (message) => {
-        // Emit the message to all clients
+        // Emit message to everyone including the sender
         io.emit('message', message);
     });
 
-    // Runs when client disconnects
+    // Notify when user disconnects
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left the chat');
+        console.log('A user has disconnected');
     });
 });
 
-// Start server
+// Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
