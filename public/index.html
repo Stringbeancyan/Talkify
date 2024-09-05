@@ -3,40 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gmail Clone</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Messaging Service</title>
+    <link rel="stylesheet" href="public/css/style.css">
 </head>
 <body>
-    <div class="app">
-        <header>
-            <h1>Gmail Clone</h1>
-        </header>
+    <div class="container">
+        <h1>Messaging Service</h1>
+        <div id="messages"></div>
 
-        <aside class="sidebar">
-            <button id="compose-btn">Compose</button>
-            <ul>
-                <li class="active">Inbox</li>
-                <li>Sent</li>
-            </ul>
-        </aside>
-
-        <section class="main-content">
-            <div class="inbox" id="inbox">
-                <!-- Messages will be rendered here -->
-                <ul id="message-list"></ul>
-            </div>
-
-            <div class="compose" id="compose-form" style="display: none;">
-                <h2>Compose Message</h2>
-                <input id="username" type="text" placeholder="Your username">
-                <input id="recipient" type="text" placeholder="Recipient username">
-                <textarea id="message-input" placeholder="Your message"></textarea>
-                <button id="send-button">Send</button>
-            </div>
-        </section>
+        <form id="message-form">
+            <input type="text" id="message-input" placeholder="Enter your message" required>
+            <button type="submit" id="send-button">Send</button>
+        </form>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="main.js"></script>
+    <script src="public/js/main.js"></script>
 </body>
 </html>

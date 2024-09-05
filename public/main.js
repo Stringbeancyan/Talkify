@@ -1,25 +1,23 @@
+// Ensure socket.io is initialized
 const socket = io();
 
-document.getElementById('compose-btn').addEventListener('click', () => {
-    document.getElementById('compose-form').style.display = 'block';
-});
+// Send message event on form submission
+document.getElementById('message-form').addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevent form from refreshing the page
 
-document.getElementById('send-button').addEventListener('click', () => {
-    const username = document.getElementById('username').value;
-    const recipient = document.getElementById('recipient').value;
+    // Get the message from the input field
     const message = document.getElementById('message-input').value;
 
-    if (username && recipient && message) {
-        socket.emit('send-message', { username, recipient, message });
-        document.getElementById('compose-form').style.display = 'none';
-        document.getElementById('message-input').value = '';
-    } else {
-        alert('Please fill in all fields');
-    }
+    // Emit the message to the server
+    socket.emit('chatMessage', message);
+
+    // Clear the input field
+    document.getElementById('message-input').value = '';
 });
 
-socket.on('receive-message', (data) => {
-    const li = document.createElement('li');
-    li.textContent = `${data.username} to ${data.recipient}: ${data.message}`;
-    document.getElementById('message-list').appendChild(li);
+// Listen for new messages from the server
+socket.on('message', (message) => {
+    const messageDiv = document.createElement('div');
+    messageDiv.innerText = message;
+    document.getElementById('messages').appendChild(messageDiv);
 });
