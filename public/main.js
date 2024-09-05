@@ -12,8 +12,9 @@ document.getElementById('send-button').addEventListener('click', () => {
     }
 });
 
+// Listen for incoming messages
 socket.on('receive-message', (data) => {
     const li = document.createElement('li');
     li.textContent = `${data.username}: ${data.message}`;
     document.getElementById('messages').appendChild(li);
-});s
+});

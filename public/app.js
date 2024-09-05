@@ -7,14 +7,16 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', (socket) => {
     console.log('A user connected');
 
+    // Broadcast the received message to all clients
     socket.on('send-message', (data) => {
         console.log('Message received:', data);
-        io.emit('receive-message', data);  // Broadcast message to all connected clients
+        io.emit('receive-message', data);  // Emit message to all connected clients
     });
 
     socket.on('disconnect', () => {
