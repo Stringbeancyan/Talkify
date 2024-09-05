@@ -1,66 +1,91 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messaging App</title>
+    <style>
+        /* Basic styling */
+        body { font-family: Arial, sans-serif; }
+        #chat-container { display: flex; }
+        #chat { flex: 2; padding: 10px; }
+        #inbox { flex: 1; padding: 10px; border-left: 1px solid #ddd; }
+        .message { margin-bottom: 10px; }
+        .login-container { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div id="login-container" class="login-container">
+        <input type="text" id="username" placeholder="Enter your username">
+        <button id="login-button">Login</button>
+    </div>
+    <div id="chat-container" style="display:none;">
+        <div id="chat">
+            <ul id="messages"></ul>
+            <input type="text" id="message-input" placeholder="Type a message">
+            <button id="send-button">Send</button>
+        </div>
+        <div id="inbox">
+            <h3>Inbox</h3>
+            <ul id="inbox-messages"></ul>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io('https://your-backend-url.com');  // Replace with your backend URL
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+        document.getElementById('login-button').addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            if (username) {
+                fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                }).then(response => {
+                    if (response.ok) {
+                        socket.emit('login', username);
+                        document.getElementById('login-container').style.display = 'none';
+                        document.getElementById('chat-container').style.display = 'flex';
+                    } else {
+                        alert('Login failed');
+                    }
+                });
+            }
+        });
 
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static('public'));  // Serve static files from the 'public' directory
+        socket.on('login-success', (messages) => {
+            messages.forEach(msg => {
+                const li = document.createElement('li');
+                li.textContent = `${msg.sender}: ${msg.message}`;
+                document.getElementById('inbox-messages').appendChild(li);
+            });
+        });
 
-// In-memory store for users and messages
-const users = {};  // { socketId: username }
-const messages = {};  // { username: [message1, message2, ...] }
+        document.getElementById('send-button').addEventListener('click', () => {
+            const message = document.getElementById('message-input').value;
+            const recipient = prompt('Enter recipient username:');
+            if (message && recipient) {
+                socket.emit('send-message', { recipient, message });
+                const li = document.createElement('li');
+                li.textContent = `You: ${message}`;
+                document.getElementById('messages').appendChild(li);
+                document.getElementById('message-input').value = '';  // Clear the input field
+            }
+        });
 
-// Handle user registration
-app.post('/register', (req, res) => {
-    const { username } = req.body;
-    if (users[username]) {
-        return res.status(400).send('Username already taken');
-    }
-    users[username] = null;  // Set initial socketId as null
-    messages[username] = [];
-    res.status(200).send('User registered');
-});
+        socket.on('receive-message', (data) => {
+            const li = document.createElement('li');
+            li.textContent = `${data.sender}: ${data.message}`;
+            document.getElementById('inbox-messages').appendChild(li);
+        });
 
-io.on('connection', (socket) => {
-    let currentUser;
+        socket.on('user-online', (username) => {
+            console.log(`${username} is online`);
+        });
 
-    // Handle user login
-    socket.on('login', (username) => {
-        if (users[username] !== undefined) {
-            users[username] = socket.id;
-            currentUser = username;
-            socket.emit('login-success', messages[username]);
-            io.emit('user-online', username);
-        } else {
-            socket.emit('login-failed', 'User not found');
-        }
-    });
-
-    // Handle private message
-    socket.on('send-message', (data) => {
-        const { recipient, message } = data;
-        if (users[recipient]) {
-            io.to(users[recipient]).emit('receive-message', { sender: currentUser, message });
-            messages[recipient].push({ sender: currentUser, message });
-        }
-    });
-
-    // Handle user disconnect
-    socket.on('disconnect', () => {
-        if (currentUser) {
-            users[currentUser] = null;
-            io.emit('user-offline', currentUser);
-        }
-    });
-});
-
-const port = process.env.PORT || 5000;
-server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+        socket.on('user-offline', (username) => {
+            console.log(`${username} is offline`);
+        });
+    </script>
+</body>
+</html>
